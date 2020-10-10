@@ -1,0 +1,15 @@
+input[type="number"] {
+  text-align: center;
+  outline: 0;
+  border-width: 0 0 2px;
+  font-size: 5vw;
+  padding-left:15px;
+
+  @media screen and (max-width: 458px) {
+    padding-left:0px;
+  }
+}
+
+input[type="number"]::placeholder {
+  opacity: 0.3;
+}

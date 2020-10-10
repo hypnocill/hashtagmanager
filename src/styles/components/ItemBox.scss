@@ -1,0 +1,14 @@
+div.app_item_box {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  color: $accent-1;
+  background-color: $fg-1;
+  overflow: hidden;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+div.app_item_box:hover {
+  background-color: $hover-1
+}
