@@ -11,7 +11,8 @@ import Modal							from "@/view/components/Modal/Modal";
 
 const htmlString						= require( '@/view/category.html' ).default;
 
-export const HASHTAG_LIMIT_QUERY_PARAM	= 'number';
+export const HASHTAG_LIMIT_QUERY_PARAM		= 'number';
+export const RANDOM_HASHTAGS_QUERY_PARAM	= 'random';
 
 interface iComponents	{
 	title: Title,
@@ -22,7 +23,7 @@ interface iComponents	{
 
 /**
  * @todo	Replace all 'this.storageModel.getCategory( category )' uses
- * 			with 'this.storageModel.getCategoryRandom( category, hashtagsNumber )' when it's available
+ * 			with 'this.storageModel.getCategoryByCriteria( category, hashtagsNumber )' when it's available
  */
 export default class Category extends ViewController
 {
@@ -44,15 +45,15 @@ export default class Category extends ViewController
 	{
 		super.mount( params );
 
-		const category			= decodeURIComponent( params.urlParam );
-		const hashtagLimit		= this.getHashtagLimitFromQueryParams();
-		const hashtagsFromNav	= Object.keys( params.data ).length
-								? params.data as tCategory
-								: null
-		const hashtags			= this.storageModel.getCategoryRandom( category, hashtagLimit, hashtagsFromNav );
+		const category							= decodeURIComponent( params.urlParam );
+		const [hashtagsLimit, hashtagsRandom]	= this.getQueryParams();
+		const hashtagsFromNav					= Object.keys( params.data ).length
+												? params.data as tCategory
+												: null
+		const hashtags							= this.storageModel.getCategoryByCriteria( category, hashtagsLimit, hashtagsRandom, hashtagsFromNav );
 
 		this.components.title	= new Title( html_ids.CATEGORY_TITLE, category );
-		this.setCopyButton( category, hashtagLimit );
+		this.setCopyButton( category, hashtagsLimit );
 		this.setHashtagBoxes( hashtags, category );
 	}
 
@@ -114,7 +115,9 @@ export default class Category extends ViewController
 		this.storageModel.deleteHashtag( hashtag, category );
 		this.unsetHashtagBoxes();
 
-		const hashtagsData		= this.storageModel.getCategoryRandom( category, this.getHashtagLimitFromQueryParams() );
+		const [hashtagsLimit, hashtagsRandom]	= this.getQueryParams();
+
+		const hashtagsData	= this.storageModel.getCategoryByCriteria( category, hashtagsLimit, hashtagsRandom );
 		this.setHashtagBoxes( hashtagsData, category );
 	}
 
@@ -126,10 +129,12 @@ export default class Category extends ViewController
 		}
 	}
 
-	private getHashtagLimitFromQueryParams(): number
+	private getQueryParams(): any[]
 	{
-		const queryParams	= new URLSearchParams( window.location.search );
+		const queryParams		= new URLSearchParams( window.location.search );
+		const hashtagsLimit		= Number( queryParams.get( HASHTAG_LIMIT_QUERY_PARAM ) );
+		const hashtagsRandom	= Boolean( queryParams.get( RANDOM_HASHTAGS_QUERY_PARAM ) );
 
-		return Number( queryParams.get( HASHTAG_LIMIT_QUERY_PARAM ) );
+		return [hashtagsLimit, hashtagsRandom];
 	}
 }

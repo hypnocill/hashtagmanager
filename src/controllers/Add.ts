@@ -2,7 +2,7 @@ import ViewController		from "@/services/router/ViewController";
 import { iRoutingParams }	from "@/services/router/Router";
 import AppStorage			from "@/services/storage/AppStorage";
 import TextInput			from "@/view/components/TextInput";
-import Checkbox				from "@/view/components/StarredCheckbox";
+import Checkbox				from "@/view/components/Checkbox";
 import DropdownDataList		from "@/view/components/DropdownDataList";
 import Button				from "@/view/components/Button";
 import HashtagStorage		from "@/models/HashtagStorage";

@@ -9,6 +9,7 @@ export default
 	HOME_CATEGORY_LIST				: 'home-category-list',
 	HOME_NUMBER_INPUT				: 'home-hashtag-number-input',
 	HOME_EMPTY_TITLE				: 'home-empty-title',
+	HOME_SET_RANDOM_CHECKBOX		: 'random_checkbox',
 
 	CATEGORY_PAGE_ID				: 'category-page',
 	CATEGORY_BOX_TEMPLATE			: 'template-category-hashtag-box',

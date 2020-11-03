@@ -86,7 +86,7 @@ export default class HashtagStorage
 		return JSON.parse( this.storage.get( this.CATEGORY_PREFIX + id ) );
 	}
 
-	public getCategoryRandom( category: string, hashtagsLimit: number, categoryData: tCategory = null ): tCategory
+	public getCategoryByCriteria( category: string, hashtagsLimit: number, random: boolean = false, categoryData: tCategory = null ): tCategory
 	{
 		const DEFAULT_LIMIT	= 100;
 
@@ -97,7 +97,7 @@ export default class HashtagStorage
 
 		categoryData	= categoryData ?? this.getCategory( category );
 
-		return this.getRandomHashtags( categoryData, hashtagsLimit );
+		return this.getHashtagsByCriteria( categoryData, hashtagsLimit, random );
 	}
 
 	public deleteCategory( id: string ): void
@@ -169,7 +169,7 @@ export default class HashtagStorage
 		return [favoriteHashtagLength, nonFavoriteHashtagLength];
 	}
 
-	private getRandomHashtags( categoryData: tCategory, limit: number ): tCategory
+	private getHashtagsByCriteria( categoryData: tCategory, limit: number, random: boolean ): tCategory
 	{
 		const [favoriteHashtagNames, nonFavoritehashtagNames]
 			= this.splitHashtagNamesByFavorite( categoryData );
@@ -177,8 +177,8 @@ export default class HashtagStorage
 			= this.getLengthsOfSplitHashtagsByFavorite( favoriteHashtagNames, nonFavoritehashtagNames, limit );
 
 
-		const randomFavoriteHashtags	= this.getRandomFromArray( favoriteHashtagNames, favoriteHashtagNamesLength );
-		const randomNonFavoriteHashtags	= this.getRandomFromArray( nonFavoritehashtagNames, nonFavoriteHashtagNamesLength );
+		const randomFavoriteHashtags	= this.getFromArrayByCriteria( favoriteHashtagNames, favoriteHashtagNamesLength, random );
+		const randomNonFavoriteHashtags	= this.getFromArrayByCriteria( nonFavoritehashtagNames, nonFavoriteHashtagNamesLength, random );
 
 		const randomHashtagList: tCategory	= {};
 
@@ -197,22 +197,22 @@ export default class HashtagStorage
 		return randomHashtagList;
 	}
 
-	private getRandomFromArray( arr: any[], n: number ): any[]
+	private getFromArrayByCriteria( arr: any[], desiredLength: number, random: boolean = false ): any[]
 	{
-		let result	= new Array( n );
+		let result	= new Array( desiredLength );
 		let len		= arr.length;
 		const taken	= new Array( len );
 
-		if ( n > len )
+		if ( desiredLength > len )
 		{
 			throw new RangeError( 'getRandomFromArray: more elements taken than available' );
 		}
 			
-		while ( n-- )
+		while ( desiredLength -- )
 		{
-			const x = Math.floor( Math.random() * len );
-			result[n] = arr[x in taken ? taken[x] : x];
-			taken[x] = --len in taken ? taken[len] : len;
+			const elementNumber 	= random ? Math.floor( Math.random() * len ) : desiredLength;
+			result[desiredLength]	= arr[elementNumber in taken ? taken[elementNumber] : elementNumber];
+			taken[elementNumber] 	= --len in taken ? taken[len] : len;
 		}
 
 		return result;

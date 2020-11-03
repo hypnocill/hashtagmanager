@@ -1,7 +1,7 @@
 import html_ids			from "@/config/html_ids";
 import Component		from "@/services/component/Component";
 import Utils			from "@/services/utils/Utils";
-import StarredCheckbox	from "@/view/components/StarredCheckbox";
+import Checkbox	from "@/view/components/Checkbox";
 
 const htmlCategoryBoxString	= require( '@/view/components/HashtagBox/hashtag_box_template.html' ).default;
 
@@ -25,8 +25,8 @@ export default class HashtagBox extends Component<HTMLDivElement>
 		const deleteIcon	= this.element.querySelector( '.' + html_ids.CLASS_ACTION_DELETE );
 		const starCheckbox	= this.element.querySelector( '.' + html_ids.CLASS_ACTION_STAR ) as HTMLInputElement;
 
-		const starCheckboxComponent	= new StarredCheckbox( starCheckbox );
-		this.setStarredCheckboxState( starCheckboxComponent, starred );
+		const starCheckboxComponent	= new Checkbox( starCheckbox );
+		this.setCheckboxState( starCheckboxComponent, starred );
 
 		deleteIcon.addEventListener( 'click', ( event: Event ) => onDelete( hashtag, category ) );
 		starCheckbox.addEventListener( 'click', ( event: Event ) => {
@@ -53,7 +53,7 @@ export default class HashtagBox extends Component<HTMLDivElement>
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private setStarredCheckboxState( starCheckboxComponent: StarredCheckbox, starred: boolean )
+	private setCheckboxState( starCheckboxComponent: Checkbox, starred: boolean )
 	{
 		if ( starred )
 		{

@@ -1,16 +1,17 @@
-import html_ids							from "@/config/html_ids";
-import routes							from "@/config/routes";
-import HashtagStorage, { tCategories }	from "@/models/HashtagStorage";
-import { iRoutingParams }				from "@/services/router/Router";
-import ViewController					from "@/services/router/ViewController";
-import AppStorage						from "@/services/storage/AppStorage";
-import Utils							from "@/services/utils/Utils";
-import CategoryBox						from "@/view/components/CategoryBox/CategoryBox";
-import Button							from "@/view/components/Button";
-import FileInput						from "@/view/components/FileInput";
-import NumberInput						from "@/view/components/NumberInut";
-import Modal							from "@/view/components/Modal/Modal";
-import { HASHTAG_LIMIT_QUERY_PARAM }	from "@/controllers/Category";
+import html_ids														from "@/config/html_ids";
+import routes														from "@/config/routes";
+import HashtagStorage, { tCategories }								from "@/models/HashtagStorage";
+import { iRoutingParams }											from "@/services/router/Router";
+import ViewController												from "@/services/router/ViewController";
+import AppStorage													from "@/services/storage/AppStorage";
+import Utils														from "@/services/utils/Utils";
+import CategoryBox													from "@/view/components/CategoryBox/CategoryBox";
+import Button														from "@/view/components/Button";
+import FileInput													from "@/view/components/FileInput";
+import NumberInput													from "@/view/components/NumberInut";
+import Modal														from "@/view/components/Modal/Modal";
+import Checkbox														from "@/view/components/Checkbox";
+import { HASHTAG_LIMIT_QUERY_PARAM, RANDOM_HASHTAGS_QUERY_PARAM }	from "@/controllers/Category";
 
 const htmlString			= require( '@/view/home.html' ).default;
 
@@ -19,7 +20,8 @@ interface iComponents	{
 	copyButton: Button,
 	fileImport: FileInput,
 	numberInput: NumberInput,
-	modal: Modal
+	modal: Modal,
+	randomCheckbox: Checkbox
 }
 
 export default class Home extends ViewController
@@ -31,7 +33,8 @@ export default class Home extends ViewController
 		copyButton: null,
 		fileImport: null,
 		numberInput: null,
-		modal: null
+		modal: null,
+		randomCheckbox: null
 	};
 
 	constructor( rootElement : HTMLElement )
@@ -54,6 +57,7 @@ export default class Home extends ViewController
 			this.alreadyVisited	= true;
 		}
 
+		this.setRandomHashtagsCheckbox();
 		this.setHashtagNumberInput();
 		this.setCategoryBoxes( categories );
 		this.setExportAsJsonButton();
@@ -99,6 +103,20 @@ export default class Home extends ViewController
 		}
 	}
 
+	private setRandomHashtagsCheckbox()
+	{
+		const onChangeCallback	= ( selected: boolean ) =>
+		{
+			for ( const categoryBox of this.components.categoryBoxes )
+			{
+				const url	= this.buildUrlToCategoryPage( categoryBox.getCategory(), selected );
+				categoryBox.setHref( url );
+			}
+		}
+
+		this.components.randomCheckbox	= new Checkbox( html_ids.HOME_SET_RANDOM_CHECKBOX, onChangeCallback );
+	}
+
 	private unsetCategoryBoxes()
 	{
 		for ( const categoryBox of this.components.categoryBoxes )
@@ -116,11 +134,12 @@ export default class Home extends ViewController
 
 		for ( const category in categories )
 		{
-			const categoryData	= categories[category];
+			const categoryData		= categories[category];
+			const randomHashtags	= this.components.randomCheckbox.getIsSelected();
 
 			const categoryBox	= new CategoryBox(
 				category,
-				this.buildUrlToCategoryPage( category ),
+				this.buildUrlToCategoryPage( category, randomHashtags ),
 				categoryData,
 				this.deleteCategory.bind( this )
 			);
@@ -189,10 +208,18 @@ export default class Home extends ViewController
 		this.components.fileImport	= new FileInput( html_ids.HOME_IMPORT_ALL, onImportCallback );
 	}
 
-	private buildUrlToCategoryPage( category: string ): string
+	private buildUrlToCategoryPage( category: string, randomHashtags: boolean = false ): string
 	{
-		const hashtagNumberParams	= { [HASHTAG_LIMIT_QUERY_PARAM]: this.components.numberInput.getValue() };
-		const urlQueryParams		= new URLSearchParams( hashtagNumberParams );
+		let hashtagNumberParams: { [key: string]: string; }	= {
+			[HASHTAG_LIMIT_QUERY_PARAM]	: this.components.numberInput.getValue()
+		};
+
+		if ( randomHashtags )
+		{
+			hashtagNumberParams[RANDOM_HASHTAGS_QUERY_PARAM]	= String( randomHashtags );
+		}
+
+		const urlQueryParams	= new URLSearchParams( hashtagNumberParams );
 
 		return routes.CATEGORY + category + '?' + urlQueryParams.toString();
 	}

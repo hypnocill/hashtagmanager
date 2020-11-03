@@ -106,7 +106,7 @@ p {
     padding-top: 30px;
   }
 
-  input, button {
+  input[type="text"], button {
     width: 60%;
 
     @media screen and (max-width: $breakpoint-mobile) {
