@@ -19,6 +19,7 @@ export default class DropdownDataList extends Component<HTMLInputElement>
 		}
 
 		this.element.autocomplete	= 'off';
+		this.element.type			= 'text';
 	}
 
 	public addListItem( value: string )
